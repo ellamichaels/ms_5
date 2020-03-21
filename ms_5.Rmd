@@ -1,0 +1,39 @@
+---
+title: "Average Home Price in Each State's Most Expensive City"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, options(scipen = 999))
+library(tidyverse)
+library(readr)
+
+zillow <- read.csv("raw-data/Neighborhood_Zhvi_AllHomes.csv")
+
+```
+
+
+```{r}
+
+
+max_city <- zillow %>%
+  group_by(City) %>%
+  summarize(city_price = mean(X2020.01), State = first(State)) %>%
+  group_by(State) %>%
+  summarize(max_price = max(city_price), City = first(City))
+
+
+ggplot(max_city, aes(x = fct_rev(fct_reorder(State, max_price)), y = (max_price), fill = City)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 90, vjust = -.001)) +
+  scale_y_continuous(labels = scales::comma_format()) +
+  labs(x = "State", y = "Average Home  Price in Most Expensive City",
+       main = "Home Price in Each State's Most Expensive City")
+
+
+
+
+```
+
